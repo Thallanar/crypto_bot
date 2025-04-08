@@ -1,0 +1,10 @@
+# Pastas
+
+/build
+/.vscode
+/test
+
+# Arquivos
+
+.env
+crypto_bot
