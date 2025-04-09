@@ -36,7 +36,6 @@ class API
            
         std::string api_key;
         std::string secret_key;
-        
         std::deque<double> price_buffer;
         const size_t MAX_BUFFER_SIZE = 50;          // Tamanho do buffer para os cálculos  
 

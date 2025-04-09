@@ -11,8 +11,6 @@ std::map<std::string, std::string> API::load_env(const std::string& filename)
     std::string line;
     std::map<std::string, std::string> env;
 
-    std::cout << "[DEBUG] Cheguei na linha 34" << std::endl;
-
     if (!file.is_open()) 
     {
         throw std::runtime_error("Erro ao abrir o arquivo .env");
@@ -60,9 +58,9 @@ websocketpp::lib::shared_ptr<boost::asio::ssl::context> API::on_tls_init(std::we
     try 
     {
         ctx->set_options(boost::asio::ssl::context::default_workarounds |
-                        boost::asio::ssl::context::no_sslv2 |
-                        boost::asio::ssl::context::no_sslv3 |
-                        boost::asio::ssl::context::single_dh_use);
+                         boost::asio::ssl::context::no_sslv2 |
+                         boost::asio::ssl::context::no_sslv3 |
+                         boost::asio::ssl::context::single_dh_use);
     } catch (std::exception &e) {
         std::cerr << "Erro ao inicializar TLS: " << e.what() << std::endl;
     }

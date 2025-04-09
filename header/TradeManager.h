@@ -17,6 +17,8 @@
 #include <asio/ssl.hpp>
 #include <nlohmann/json.hpp>
 
+#include "../constructor/AnalysisSnapshot.h"
+
 #include "api/api.h"
 #include "OrderManager.h"
 #include "QuantitativeAnalyses.h"
@@ -33,8 +35,10 @@ class TradeManager
     
     public:
         TradeManager(API& api_ref, OrderManager& om, const std::string& sym) : api(api_ref), qa(api_ref), order_mgr(om), symbol(sym) {}
-    
+
         void update_price(double price);
+        
+        AnalysisSnapshot get_analysis_snapshot();
     
         void evaluate_signals();
 };

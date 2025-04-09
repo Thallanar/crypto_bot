@@ -8,6 +8,32 @@ void TradeManager::update_price(double price)
         api.price_buffer.erase(api.price_buffer.begin());
     }
 }
+
+AnalysisSnapshot TradeManager::get_analysis_snapshot() 
+{
+    AnalysisSnapshot snapshot;
+
+    if (api.price_buffer.empty()) return snapshot;
+
+    double upper_band, lower_band;
+    double macd_signal;
+
+    snapshot.available_usdt = api.get_balance("USDT");
+
+    snapshot.sma20 = qa.calculate_sma(20);
+    snapshot.sma50 = qa.calculate_sma(50);
+    snapshot.rsi14 = qa.calculate_rsi(14);
+    snapshot.macd_line = qa.calculate_macd(macd_signal);
+    snapshot.macd_signal = macd_signal;
+    snapshot.last_price = api.price_buffer.back();
+    
+    qa.calculate_bollinger_bands(upper_band, lower_band);
+    snapshot.upper_band = upper_band;
+    snapshot.lower_band = lower_band;
+
+    snapshot.is_ready = true;
+    return snapshot;
+}
     
 void TradeManager::evaluate_signals() 
 {
@@ -26,14 +52,6 @@ void TradeManager::evaluate_signals()
 
     qa.calculate_bollinger_bands(upper_band, lower_band);
 
-    std::cout << "[SMA20]: " << sma20 
-              << " | [SMA50]: " << sma50 
-              << " | [RSI]: " << rsi14 
-              << " | [MACD]: " << macd_line 
-              << " | [Bollinger]: (" << lower_band << " - " << upper_band << ")"
-              << " | [Média para Compra]: " << order_mgr.average_buy_price 
-              << " | [Preço]: " << last_price << std::endl;
-
     //---------------------------------------------------------------------------
     //------------------------->  Debug de Compra <------------------------------
     //---------------------------------------------------------------------------
@@ -47,7 +65,7 @@ void TradeManager::evaluate_signals()
     // std::cout << "macd_line > macd_signal: " << (macd_line > macd_signal) << " (" << macd_line << " > " << macd_signal << ")\n";
               
 
-    if (!order_mgr.has_active_trade && sma20 > sma50 && rsi14 < 30 && last_price <= lower_band && macd_line > macd_signal && last_price <= order_mgr.average_buy_price) 
+    if (order_mgr.active_trades_count < 5 && sma20 > sma50 && rsi14 < 30 && last_price <= lower_band && macd_line > macd_signal && last_price <= order_mgr.average_buy_price) 
     {
         if (available_money == 0)
         {
