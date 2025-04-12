@@ -1,4 +1,5 @@
 #include "../header/TradeManager.h"
+#include "../header/BotInterface.h"
     
 void TradeManager::update_price(double price) 
 {
@@ -56,36 +57,38 @@ void TradeManager::evaluate_signals()
     //------------------------->  Debug de Compra <------------------------------
     //---------------------------------------------------------------------------
     //---------------------------------------------------------------------------    
-    //-Obs.: DESCOMENTAR APENAS EM CASOS ONDE HOUVER ALGUM PROBLEMA NAS COMPRAS!-
-    // std::cout << "\n[DEBUG - Compra]\n";
-    // std::cout << "has_active_trade: " << order_mgr.has_active_trade << "\n";
-    // std::cout << "sma20 > sma50: " << (sma20 > sma50) << " (" << sma20 << " > " << sma50 << ")\n";
-    // std::cout << "rsi14 < 30: " << (rsi14 < 30) << " (" << rsi14 << ")\n";
-    // std::cout << "price <= lower_band: " << (last_price <= lower_band) << " (" << last_price << " <= " << lower_band << ")\n";
-    // std::cout << "macd_line > macd_signal: " << (macd_line > macd_signal) << " (" << macd_line << " > " << macd_signal << ")\n";
+    // -Obs.: DESCOMENTAR APENAS EM CASOS ONDE HOUVER ALGUM PROBLEMA NAS COMPRAS!-
+    // BotInterface::notify_event("[DEBUG - Compra]"
+    //     + "has_active_trade: " + order_mgr.has_active_trade + "
+    //     + "sma20 > sma50: " + (sma20 > sma50) + " (" + sma20 + " > " + sma50 + ")
+    //     + "rsi14 < 30: " + (rsi14 < 30) + " (" + rsi14 + ")
+    //     + "price <= lower_band: " + (last_price <= lower_band) + " (" + last_price + " <= " + lower_band + 
+    //     + "macd_line > macd_signal: " + (macd_line > macd_signal) + " (" + macd_line + " > " + macd_signal")");
               
 
     if (order_mgr.active_trades_count < 5 && sma20 > sma50 && rsi14 < 30 && last_price <= lower_band && macd_line > macd_signal && last_price <= order_mgr.average_buy_price) 
     {
         if (available_money == 0)
         {
-            std::cout << "Não há dinheiro suficiente para a transação!" << std::endl;
+            BotInterface::notify_event("Não há dinheiro suficiente para a transação!", "ERROR");
             return;
         }
         
-        std::cout << "📈 SINAL FORTE DE COMPRA 🚀 Executando ordem..." << std::endl;
+        BotInterface::notify_event("📈 SINAL FORTE DE COMPRA 🚀 Executando ordem...", "SIGNAL");
         order_mgr.place_order(symbol, "BUY", 10.0);
 
     } else if (sma20 < sma50 && rsi14 > 70 && last_price >= upper_band && macd_line < macd_signal) {
         if (last_price <= order_mgr.average_buy_price) 
         {
-            std::cout << "⚠️ Venda ignorada: preço abaixo do preço médio de compra!" << std::endl;
+            BotInterface::notify_event("⚠️ Venda ignorada: preço abaixo do preço médio de compra!", "INFO");
             return;
+
         } else if (!order_mgr.has_active_trade) {
-            std::cout << "📉 SINAL FORTE DE VENDA ❌ Não há posição aberta para vender!" << std::endl;
+            BotInterface::notify_event( "📉 SINAL FORTE DE VENDA ❌ Não há posição aberta para vender!", "INFO");
             return;
+
         } else {
-            std::cout << "📉 SINAL FORTE DE VENDA ❌ Executando ordem..." << std::endl;
+            BotInterface::notify_event( "📉 SINAL FORTE DE VENDA ❌ Executando ordem...", "SIGNAL");
             order_mgr.place_order(symbol, "SELL", 10.0);
         }
     }

@@ -31,6 +31,7 @@ class TradeManager
         API& api;
         QuantitativeAnalyses qa;
         OrderManager& order_mgr;
+        
         std::string symbol;
     
     public:

@@ -7,6 +7,8 @@
 #include "../header/OrderManager.h"
 #include "../header/QuantitativeAnalyses.h"
 #include "../header/TradeManager.h"
+#include "../header/BotInterface.h"
+#include "../header/FileManager.h"
 
 OrderManager* global_order_mgr = nullptr; 
 
@@ -25,6 +27,8 @@ int main()
 {
     std::string symbol;
 
+    std::system("clear");
+
     std::cout << "==================================================\n";
     std::cout << "      BOT DE TRADING - SELEÇÃO DE CRIPTOMOEDA\n";
     std::cout << "==================================================\n";
@@ -41,13 +45,17 @@ int main()
     symbol.erase(symbol.find_last_not_of(" \t\n\r") + 1);
 
     API api;
+    FileManager file_manager(symbol);
     OrderManager order_mgr(api);
     TradeManager trade_mgr(api, order_mgr, symbol);
+    BotInterface bot_interface(api, order_mgr, symbol);
 
     order_mgr.trade_mgr = &trade_mgr;
+    order_mgr.file_mgr = &file_manager;
+    bot_interface.trade_mgr = &trade_mgr;
     
     std::thread websocket_thread([&](){ api.run_websocket(symbol); });
-    std::thread painel_thread(&OrderManager::display_status_loop, &order_mgr, symbol);
+    std::thread painel_thread(&BotInterface::display_status_loop, &bot_interface, symbol);
     std::thread input_thread(&OrderManager::user_input_loop, &order_mgr, symbol);
     
     std::this_thread::sleep_for(std::chrono::seconds(1)); 
@@ -60,13 +68,6 @@ int main()
     std::cout << "Conectando ao WebSocket da Binance..." << std::endl;
     std::cout << "Moeda a ser trocada: " << symbol << std::endl;
 
-    
-    if (!order_mgr.has_active_trade) 
-    {
-        std::cout << "Iniciando compra..." << std::endl;
-        order_mgr.place_order(symbol, "BUY", 10.0);
-    }
-    
     // Loop principal para manter a execução
     while (order_mgr.is_running()) 
     {

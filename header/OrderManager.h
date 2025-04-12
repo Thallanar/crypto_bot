@@ -28,6 +28,7 @@
 #pragma once
 
 class TradeManager;
+class FileManager;
 
 class OrderManager 
 {
@@ -42,6 +43,7 @@ class OrderManager
         OrderManager(API& api_ref) : api(api_ref) {};
 
         TradeManager* trade_mgr = nullptr;
+        FileManager* file_mgr = nullptr;
 
         int max_active_trades = 5;
         int active_trades_count = 0;
@@ -57,8 +59,6 @@ class OrderManager
         const double STOP_LOSS_PERCENT = 0.02;
         const double TAKE_PROFIT_PERCENT = 0.05;
 
-        void display_status_loop(const std::string& symbol);
-
         bool place_order(const std::string& symbol, const std::string& side, double quantity);
     
         void check_risk_management(double current_price, const std::string& symbol);
@@ -67,7 +67,7 @@ class OrderManager
 
         void print_report() const;
 
-        void stop() { running = false; }
+        void stop() { running = false; };
 
-        bool is_running() const { return running; }
+        bool is_running() const { return running; };
 };

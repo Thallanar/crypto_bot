@@ -27,7 +27,7 @@ class API
 {
     private:
         typedef websocketpp::client<websocketpp::config::asio_tls_client> client;
-        const std::string BASE_URL = "https://testnet.binance.vision/api/v3";
+        const std::string BASE_URL = "https://api.binance.com/api/v3";
     
         std::map<std::string, std::string> load_env(const std::string& filename);
     
