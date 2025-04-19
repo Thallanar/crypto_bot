@@ -2,7 +2,7 @@
 
 CryptoBot é um bot de código aberto para a realizações de transações com a API da Binance. Uma forma rápida e simples de realizar Day Trading!
 
-[CryptoBot]("/storage/emulated/0/Download/Modeloslogotipos.svg")
+![CryptoBot]("/storage/emulated/0/Download/Modeloslogotipos.svg")
 
 # Como compilar:
 
